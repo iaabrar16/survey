@@ -1,0 +1,83 @@
+.question-item {
+    padding: 10px; 
+    background-color: #f9f9f9;
+    border: 1px solid #ddd; 
+    margin-bottom: 10px; 
+    cursor: move;
+    position: relative; 
+    padding-bottom: 50px; /* Add padding for button space */
+}
+
+.sortable-placeholder {
+    border: 1px dashed #ccc;
+    height: 40px; /* Adjust this height as needed */
+}
+
+.add-option {
+    position: absolute; /* Positioned relative to the parent */
+    left: 10px; /* Align to the left */
+    bottom: 10px; /* Align to the bottom */
+    background-color: #28a745; 
+    color: white; 
+    border: none; 
+    border-radius: 50%; 
+    padding: 5px; /* Adjust padding */
+    cursor: pointer; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px; /* Fixed width for circular button */
+    height: 30px; /* Fixed height for circular button */
+}
+
+.delete-question {
+    position: absolute; /* Positioned relative to the parent */
+    right: 20px; /* Align to the right with some space for the checkbox */
+    bottom: 10px; /* Align to the bottom */
+    background-color: #dc3545; 
+    color: white; 
+    border: none; 
+    border-radius: 4px; 
+    padding: 5px 10px; /* Adjust padding for better appearance */
+    cursor: pointer; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.required-checkbox {
+    position: absolute; /* Positioned relative to the parent */
+    right: 70px;
+    bottom: 10px; /* Align to the bottom */
+}
+
+.form-check-input {
+    margin-right: 5px; /* Space between checkbox and label */
+}
+
+.question-title {
+    margin-bottom: 10px; /* Space below question title */
+}
+
+.option-input {
+    width: calc(100% - 20px); /* Ensure it fits within the container */
+    margin-bottom: 5px; /* Space between options */
+}
+
+.stars {
+    display: flex;           /* Use flexbox for alignment */
+    justify-content: center; /* Center the stars */
+    margin: 10px 0;         /* Margin above and below stars */
+}
+
+.star {
+    font-size: 24px;        /* Adjust the star size */
+    margin: 0 5px;          /* Space between stars */
+    color: black;           /* Default color for empty stars */
+    transition: color 0.2s; /* Smooth transition for color change */
+    cursor: pointer;        /* Change cursor to pointer */
+}
+
+.star.filled {
+    color: gold;            /* Color for filled stars */
+}
