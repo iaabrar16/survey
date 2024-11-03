@@ -175,33 +175,38 @@ function makeSortable() {
         });
     });
 
-    // Updated Image Upload Code
-    function getImageUploadHTML() {
-        return `
-            <div class="question-item" data-type="image">
-                <input type="text" class="form-control mb-2 question-title" placeholder="Image Upload Question">
-                <div class="image-preview" style="display: none; margin-bottom: 10px;">
-                    <img id="imagePreview-${questionCount}" style="max-width: 100%; height: auto;" alt="Image Preview">
-                </div>
-                <input type="file" class="form-control mb-1" accept="image/*" onchange="previewImage(event, ${questionCount})">
-                <div class="required-checkbox form-check">
-                    <input type="checkbox" class="form-check-input" id="required-${questionCount}">
-                    <label class="form-check-label" for="required-${questionCount}">Required</label>
-                </div>
-                <button class="delete-question btn btn-danger"><i class="fas fa-trash"></i></button>
-            </div>`;
-    }
+ // Updated Image Upload Code
+function getImageUploadHTML() {
+    return `
+        <div class="question-item" data-type="image">
+            <input type="text" class="form-control mb-2 question-title" placeholder="Image Upload Question">
+            <div class="image-preview" style="display: none; margin-bottom: 10px;">
+                <img id="imagePreview-${questionCount}" style="max-width: 100%; height: auto;" alt="Image Preview">
+            </div>
+            <input type="file" class="form-control mb-1" accept="image/*" onchange="previewImage(event, ${questionCount})">
+            <div class="required-checkbox form-check">
+                <input type="checkbox" class="form-check-input" id="required-${questionCount}">
+                <label class="form-check-label" for="required-${questionCount}">Required</label>
+            </div>
+            <button class="delete-question btn btn-danger"><i class="fas fa-trash"></i></button>
+        </div>`;
+}
 
-    // Preview image before upload
-    window.previewImage = function(event, questionCount) {
-        const reader = new FileReader();
-        reader.onload = function() {
-            const img = document.getElementById(`imagePreview-${questionCount}`);
-            img.src = reader.result; // Set the source to the reader's result
-            img.parentElement.style.display = 'block'; // Show the image preview
-        }
-        reader.readAsDataURL(event.target.files[0]); // Read the file
+// Preview image before upload
+window.previewImage = function(event, questionCount) {
+    const reader = new FileReader();
+    reader.onload = function() {
+        const img = document.getElementById(`imagePreview-${questionCount}`);
+        img.src = reader.result; // Set the source to the reader's result
+        img.parentElement.style.display = 'block'; // Show the image preview
+
+        // Save the image to local storage (if you want to persist this)
+        localStorage.setItem(`imageData-${questionCount}`, reader.result); // Save image as base64
     }
+    reader.readAsDataURL(event.target.files[0]); // Read the file
+}
+
+
 
     // Handle deletion of a question
     $(document).on('click', '.delete-question', function() {
@@ -288,6 +293,14 @@ function makeSortable() {
                     }
                     questionHtml += '</div>'; // Close star-rating div
                 }
+
+                else if (questionType === 'image') {
+                    const imageSrc = $(this).find('.image-input').attr('src'); // Get the image source
+                    questionHtml += `<div class="question"><img src="${imageSrc}" alt="Question Image" style="max-width: 100%; height: auto; margin-bottom: 10px;">`;
+                    questionHtml += '<input type="text" placeholder="Your answer here" style="width: 100%; height: 40px; padding: 10px;"/>';
+
+                }
+                
                 
                 // Handle text field questions
                 else if (questionType === 'textField') {

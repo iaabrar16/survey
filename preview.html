@@ -94,6 +94,19 @@
             });
         });
     });
+    const params = getQueryParams();
+    document.getElementById('surveyTitle').innerText = params.title;
+    document.getElementById('surveyDescription').innerText = params.description;
+
+    const questionsList = JSON.parse(params.questions);
+    const questionContainer = document.getElementById('questionList');
+    questionsList.forEach(question => {
+        const questionElement = document.createElement('div');
+        questionElement.classList.add('question');
+        questionElement.innerHTML = question; // Render question HTML
+
+        questionContainer.appendChild(questionElement);
+    });
     </script>
 </head>
 <body>
