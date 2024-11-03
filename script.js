@@ -48,18 +48,17 @@ $(function() {
         makeSortable(); // Ensure sorting is enabled
     }
 
-    function makeSortable() {
-        $("#surveyQuestions").sortable({
-            handle: ".question-title", // Drag handle
-            placeholder: "sortable-placeholder",
-            start: function(event, ui) {
-                ui.placeholder.height(ui.item.height()); // Match the height of the dragged item
-            },
-            stop: function(event, ui) {
-                updateQuestionTitles(); // Update titles after sorting
-            }
-        }).disableSelection();
-    }
+function makeSortable() {
+    // Initialize Sortable on the surveyQuestions container
+    Sortable.create(document.getElementById('surveyQuestions'), {
+        animation: 150,
+        swap: true,
+        onEnd: function(evt) {
+            updateQuestionTitles(); // Update question numbers after reordering
+        }
+    });
+}
+
 
     function updateQuestionTitles() {
         $(".question-item").each(function(index) {
@@ -349,3 +348,22 @@ $(document).ready(function() {
         doc.save('survey.pdf');
     });
 });
+
+
+// Initialize Sortable.js on the surveyQuestions container
+const surveyQuestionsContainer = document.getElementById('surveyQuestions');
+
+Sortable.create(surveyQuestionsContainer, {
+    animation: 150,  // Smooth animation
+    swap: true,      // Enable swapping of items
+    onEnd: function(evt) {
+        updateQuestionTitles(); // Update question numbers after every reorder
+    }
+});
+
+// Update question numbering after reordering
+function updateQuestionTitles() {
+    $(".question-item").each(function(index) {
+        $(this).find('.question-title').val(`Question ${index + 1}`);
+    });
+}
