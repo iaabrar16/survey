@@ -330,7 +330,6 @@ function makeSortable() {
     }
 });
 
-
 // Initialize Sortable.js on the surveyQuestions container
 const surveyQuestionsContainer = document.getElementById('surveyQuestions');
 
