@@ -237,6 +237,72 @@ function makeSortable() {
         alert('Survey saved successfully!'); // Alert on successful save
     });
 
+    $(document).ready(function() {
+        // Event listener for the Preview Survey button
+        $('#previewSurvey').on('click', function() {
+            const surveyTitle = $('#surveyTitle').val(); // Get survey title
+            const surveyDescription = $('#surveyDescription').val(); // Get survey description
+            const questions = [];
+    
+            // Collect questions and options
+            $('.question-item').each(function() {
+                const questionTitle = $(this).find('.question-title').val(); // Get question title
+                const questionType = $(this).data('type'); // Get question type
+                const required = $(this).find('.form-check-input[type="checkbox"]').is(':checked'); // Get required status
+                
+                let questionHtml = `<div class="question"><strong>${questionTitle}</strong>${required ? ' (Required)' : ''}`;
+    
+                // Display options as radio buttons if the question type is multipleChoice
+                if (questionType === 'multipleChoice') {
+                    questionHtml += '<div>';
+                    $(this).find('.options .option-input').each(function(index) {
+                        const optionText = $(this).val();
+                        questionHtml += `
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="question${questions.length}" id="option${index}" value="${optionText}">
+                                <label class="form-check-label" for="option${index}">${optionText}</label>
+                            </div>`;
+                    });
+                    questionHtml += '</div>'; // Close options div
+                }
+                // Handle Likert scale options
+                else if (questionType === 'likertScale') {
+                    const likertOptions = ["Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree"]; // Define Likert scale options
+                    likertOptions.forEach((likertText, index) => {
+                        questionHtml += `
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="likert${questions.length}" id="likertOption${questions.length}_${index}" value="${likertText}">
+                                <label class="form-check-label" for="likertOption${questions.length}_${index}">${likertText}</label>
+                            </div>`;
+                    });
+                    questionHtml += '</div>'; // Close likert scale div
+                }
+                // Handle star rating questions
+                else if (questionType === 'starRating') {
+                    questionHtml += '<div class="star-rating">';
+                    for (let i = 1; i <= 5; i++) {
+                        questionHtml += `
+                            <input type="radio" name="starRating${questions.length}" id="star${questions.length}_${i}" value="${i}" style="display:none;">
+                            <label for="star${questions.length}_${i}" class="star">&#9733;</label>
+                        `;
+                    }
+                    questionHtml += '</div>'; // Close star-rating div
+                }
+                
+                // Handle text field questions
+                else if (questionType === 'textField') {
+                    questionHtml += '<input type="text" placeholder="Your answer here" style="width: 100%; height: 40px; padding: 10px;"/>';
+                }
+    
+                questionHtml += '</div>'; // Close question div
+                questions.push(questionHtml);
+            });
+    
+            // Redirect to the preview page with the data
+            window.location.href = `preview.html?title=${encodeURIComponent(surveyTitle)}&description=${encodeURIComponent(surveyDescription)}&questions=${encodeURIComponent(JSON.stringify(questions))}`;
+        });
+    });
+         
     // Load survey from local storage
     function loadSurvey() {
         const surveyData = JSON.parse(localStorage.getItem('surveyData'));
@@ -262,91 +328,6 @@ function makeSortable() {
             });
         }
     }
-});
-
-$(document).ready(function() {
-    // Event listener for the Preview Survey button
-    $('#previewSurvey').on('click', function() {
-        const surveyTitle = $('#surveyTitle').val(); // Get survey title
-        const surveyDescription = $('#surveyDescription').val(); // Get survey description
-        const questionsHtml = [];
-
-        // Collect questions and options
-        $('.question-item').each(function() {
-            const questionTitle = $(this).find('.question-title').val(); // Get question title
-            const questionType = $(this).data('type'); // Get question type
-            const required = $(this).find('.form-check-input[type="checkbox"]').is(':checked'); // Get required status
-            
-            let questionHtml = `<div class="question"><strong>${questionTitle}</strong>${required ? ' (Required)' : ''}</div>`;
-
-            // Display options if the question type is multipleChoice
-            if (questionType === 'multipleChoice') {
-                questionHtml += '<ul>';
-                $(this).find('.options .option-input').each(function() {
-                    const optionText = $(this).val();
-                    questionHtml += `<li>${optionText}</li>`;
-                });
-                questionHtml += '</ul>';
-            }
-
-            questionsHtml.push(questionHtml);
-        });
-
-        // Set preview data in the modal
-        $('#previewTitle').text(surveyTitle);
-        $('#previewDescription').text(surveyDescription);
-        $('#previewQuestions').html(questionsHtml.join('')); // Join all questions into HTML
-
-        // Show the preview modal
-        $('#previewModal').modal('show');
-    });
-});
-
-$(document).ready(function() {
-    // Event listener for Save as PDF button
-    $('#savePdf').on('click', function() {
-        const { jsPDF } = window.jspdf; // Import jsPDF
-        const doc = new jsPDF();
-
-        const surveyTitle = $('#surveyTitle').val(); // Get survey title
-        const surveyDescription = $('#surveyDescription').val(); // Get survey description
-        const questions = [];
-
-        // Collect questions and options
-        $('.question-item').each(function() {
-            const questionTitle = $(this).find('.question-title').val(); // Get question title
-            const questionType = $(this).data('type'); // Get question type
-            
-            let questionData = `${questionTitle}`;
-
-            // Display options if the question type is multipleChoice
-            if (questionType === 'multipleChoice') {
-                const options = [];
-                $(this).find('.options .option-input').each(function() {
-                    const optionText = $(this).val();
-                    options.push(optionText);
-                });
-                questionData += `\nOptions: ${options.join(', ')}`;
-            }
-
-            questions.push(questionData);
-        });
-
-        // Add title and description to PDF
-        doc.setFontSize(16);
-        doc.text(surveyTitle, 10, 10);
-        doc.setFontSize(12);
-        doc.text(surveyDescription, 10, 20);
-
-        // Add questions to PDF
-        doc.setFontSize(14);
-        questions.forEach((question, index) => {
-            doc.text(`${index + 1}. ${question}`, 10, 30 + (index * 10));
-        });
-
-        // Save the PDF
-        doc.save('survey.pdf');
-    });
 });
 
 

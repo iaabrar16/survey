@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Survey Preview</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .question {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .question strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .center {
+            text-align: center;
+        }
+
+        .star-rating {
+    direction: rtl; /* Allows for easier handling of star selection */
+}
+
+.star-rating input[type="radio"] {
+    display: none; /* Hide the radio buttons */
+}
+
+.star-rating label {
+    font-size: 30px; /* Adjust size as needed */
+    color: lightgray; /* Default star color */
+    cursor: pointer;
+}
+
+/* Set color for selected stars */
+.star-rating input[type="radio"]:checked ~ label {
+    color: gold; /* Color for selected stars */
+}
+
+/* Color for stars on hover */
+.star-rating label:hover,
+.star-rating label:hover ~ label {
+    color: gold; /* Color for stars on hover */
+}
+
+
+    </style>
+    <script>
+        // Function to get query parameters
+        function getQueryParams() {
+            const params = {};
+            window.location.search.substring(1).split("&").forEach(param => {
+                const [key, value] = param.split("=");
+                params[decodeURIComponent(key)] = decodeURIComponent(value);
+            });
+            return params;
+        }
+
+        // Display survey data
+        document.addEventListener("DOMContentLoaded", function() {
+            const params = getQueryParams();
+            document.getElementById('surveyTitle').innerText = params.title;
+            document.getElementById('surveyDescription').innerText = params.description;
+
+            const questionsList = JSON.parse(params.questions);
+            const questionContainer = document.getElementById('questionList');
+            questionsList.forEach(question => {
+                const questionElement = document.createElement('div');
+                questionElement.classList.add('question');
+                questionElement.innerHTML = question; // Render question HTML
+                questionContainer.appendChild(questionElement);
+            });
+        });
+        const starRatingLabels = document.querySelectorAll('.star-rating label');
+    starRatingLabels.forEach(label => {
+        label.addEventListener('click', function() {
+            const starId = this.getAttribute('for');
+            const starRadio = document.getElementById(starId);
+            starRadio.checked = true;
+
+            // Set the color for each star based on selection
+            const starContainer = this.parentElement;
+            const stars = starContainer.querySelectorAll('input[type="radio"]');
+            stars.forEach((star, index) => {
+                const starLabel = star.nextElementSibling; // Get the associated label
+                if (index < starRadio.value) {
+                    starLabel.style.color = 'gold'; // Color selected stars
+                } else {
+                    starLabel.style.color = 'lightgray'; // Color unselected stars
+                }
+            });
+        });
+    });
+    </script>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="center" id="surveyTitle"></h1>
+        <p class="center" id="surveyDescription"></p>
+        <h3 class="center">Questions</h3>
+        <div id="questionList"></div>
+        <a href="index.html" class="btn btn-primary">Back to Builder</a>
+    </div>
+</body>
+</html>
